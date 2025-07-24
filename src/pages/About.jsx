@@ -1,6 +1,6 @@
 import React from 'react';
 import useFetch from '../hooks/useFetch';
-import { fetchProfile } from '../api';
+import { fetchProfile, getFullUrl } from '../api';
 import meImg from '../assets/me.png';
 
 const NAVBAR_HEIGHT = 72; // px
@@ -112,7 +112,7 @@ const About = () => {
         {/* CV Button */}
         {profile.cv_url && (
           <a
-            href={profile.cv_url}
+            href={getFullUrl(profile.cv_url)}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-2 flex items-center gap-2 text-blue-600 font-bold text-lg border border-blue-300 rounded-full px-8 py-3 shadow-md hover:shadow-lg hover:border-blue-400 hover:text-blue-700 transition-transform transform hover:scale-105 animate-fade-in-slow"

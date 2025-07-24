@@ -1,4 +1,5 @@
 import React from 'react';
+import { getFullUrl } from '../api';
 
 const CertificationCard = ({ cert }) => (
   <div className="relative bg-transparent text-gray-900 rounded-xl p-6 flex flex-col items-start border border-gray-200/50 shadow-lg hover:shadow-xl hover:border-blue-300/50 transition-all duration-300 animate-fade-in-slow">
@@ -8,7 +9,7 @@ const CertificationCard = ({ cert }) => (
     <p className="text-base md:text-lg text-gray-600 mb-4 leading-relaxed">{cert.description}</p>
     {cert.certificate_url && (
       <a
-        href={cert.certificate_url}
+        href={getFullUrl(cert.certificate_url)}
         target="_blank"
         rel="noopener noreferrer"
         className="mt-auto flex items-center gap-2 text-blue-600 font-semibold text-base md:text-lg border border-blue-300 rounded-full px-5 py-2 shadow-md hover:shadow-lg hover:border-blue-400 hover:text-blue-700 transition-transform transform hover:scale-105"

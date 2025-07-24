@@ -2,6 +2,7 @@ import React from 'react';
 import meImg from '../assets/me.png';
 import githubIcon from '../assets/github.png';
 import linkedinIcon from '../assets/linkedin.png';
+import { getFullUrl } from '../api';
 
 const NAVBAR_HEIGHT = 72; // px (approx 4.5rem)
 const NOTCH_GAP = 20; // px (gap between navbar and notch)
@@ -58,7 +59,7 @@ const HeroSection = ({ profile }) => {
           </div>
           {profile.cv_url && (
             <a
-              href={profile.cv_url}
+              href={getFullUrl(profile.cv_url)}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-2 inline-block text-white bg-gray-900 font-bold text-lg border border-gray-900 rounded-full px-8 py-3 shadow hover:bg-gray-800 hover:border-gray-800 transition"
