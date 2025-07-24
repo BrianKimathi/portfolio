@@ -1,5 +1,5 @@
 const API_BASE = 'https://portfolio-backend-x6q9.onrender.com/api';
-export const BACKEND_BASE = 'https://portfolio-backend-x6q9.onrender.com';
+export const BACKEND_BASE = 'https://portfolio-backend-x6q9.onrender.com/api';
 
 export function getFullUrl(path) {
   if (!path) return '';
