@@ -1,4 +1,12 @@
 const API_BASE = 'https://portfolio-backend-x6q9.onrender.com/api';
+export const BACKEND_BASE = 'https://portfolio-backend-x6q9.onrender.com';
+
+export function getFullUrl(path) {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  if (path.startsWith('/api/')) return BACKEND_BASE + path;
+  return path;
+}
 
 export const fetchProfile = async () => (await fetch(`${API_BASE}/profile`)).json();
 export const fetchProjects = async () => (await fetch(`${API_BASE}/projects`)).json();

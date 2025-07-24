@@ -1,4 +1,5 @@
 import React from 'react';
+import { getFullUrl } from '../api';
 
 const ProjectCard = ({ project }) => (
   <div
@@ -21,7 +22,7 @@ const ProjectCard = ({ project }) => (
   >
     {project.images && project.images[0] && (
       <img
-        src={project.images[0]}
+        src={getFullUrl(project.images[0])}
         alt={project.title}
         className="w-full h-48 object-cover rounded-xl mb-4 shadow-md border border-gray-200/50"
       />

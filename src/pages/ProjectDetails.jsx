@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useFetch from '../hooks/useFetch';
-import { fetchProjects } from '../api';
+import { fetchProjects, getFullUrl } from '../api';
 
 const ProjectDetails = () => {
   const { id } = useParams();
@@ -58,7 +58,7 @@ const ProjectDetails = () => {
         {project.images && project.images.length > 0 && (
           <div className="flex flex-col gap-4 mb-6">
             <img
-              src={selectedImage || defaultImage}
+              src={getFullUrl(selectedImage || defaultImage)}
               alt={`${project.title} main`}
               className="w-full max-h-96 object-contain rounded-lg shadow-md border border-gray-200/50 hover:shadow-lg transition-shadow duration-300"
             />
@@ -66,7 +66,7 @@ const ProjectDetails = () => {
               {project.images.map((img, idx) => (
                 <img
                   key={idx}
-                  src={img}
+                  src={getFullUrl(img)}
                   alt={`${project.title} thumbnail ${idx + 1}`}
                   className={`w-20 h-20 object-cover rounded-md border border-gray-200/50 cursor-pointer hover:opacity-80 transition-opacity duration-200 ${selectedImage === img ? 'ring-2 ring-blue-400' : ''}`}
                   onClick={() => setSelectedImage(img)}
