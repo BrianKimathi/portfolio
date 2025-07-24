@@ -10,6 +10,8 @@ const Projects = () => {
   const { data: projects, loading, error } = useFetch(fetchProjects, []);
   const navigate = useNavigate();
 
+  console.log(projects);
+
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen bg-white">
