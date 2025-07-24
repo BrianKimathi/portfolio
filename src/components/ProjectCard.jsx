@@ -28,7 +28,6 @@ const ProjectCard = ({ project }) => (
       />
     )}
     <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 text-center drop-shadow-sm">{project.title}</h3>
-    <p className="text-base md:text-lg text-gray-600 mb-4 text-center leading-relaxed truncate-description">{project.description}</p>
     {project.technologies && (
       <div className="mb-4 flex flex-wrap justify-center gap-2">
         {project.technologies.split(',').map((tech, idx) => (
