@@ -1,0 +1,19 @@
+[Unit]
+Description=Portfolio Backend API
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/opt/portfolio
+ExecStart=/usr/bin/java -jar /opt/portfolio/backend.jar --spring.profiles.active=prod
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# ─── Environment Variables (set via /etc/portfolio-backend.env or here) ───
+EnvironmentFile=/etc/portfolio-backend.env
+
+[Install]
+WantedBy=multi-user.target

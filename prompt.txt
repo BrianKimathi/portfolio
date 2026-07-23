@@ -1,0 +1,159 @@
+For these integrations, I want them to be in a way I activate them by connecting to account. Its like connecting to third party to access api to manage individual projects.
+
+Context & Goal:
+You are an expert Java backend engineer. I am building a custom admin dashboard to manage my portfolio and AWS infrastructure. You need to implement the Spring Boot 3 backend that acts as the central controller for this dashboard. It will communicate with the GitHub REST API to give me full control over my repositories, CI/CD workflows, pull requests, and secrets.
+
+Tech Stack Requirements:
+
+Java Version: Java 21+
+
+Framework: Spring Boot 3.2+
+
+HTTP Client: Spring's modern RestClient (do not use the deprecated RestTemplate).
+
+Security: Spring Security 6 (for protecting the dashboard endpoints).
+
+GitHub Auth: GitHub App Authentication (generating JWTs with RS256 and exchanging them for Installation Access Tokens).
+
+Encryption: lazy-sodium-java (for encrypting GitHub secrets via Libsodium).
+
+JSON Processing: Jackson.
+
+Step 1: GitHub App Authentication Implementation
+I am authenticating as a GitHub App, not a standard user with a Personal Access Token. Implement an AuthService that handles the following token lifecycle:
+
+Generate a JWT: Read my GitHub App's Private Key (.pem file), and sign a JWT using the RS256 algorithm. The token must have iat (current time), exp (10 minutes from now), and iss (my GitHub App ID). You can use the io.jsonwebtoken:jjwt library or java.security natively.
+
+Fetch Installation Access Token (IAT): Use the generated JWT to make a POST request to [https://api.github.com/app/installations/](https://api.github.com/app/installations/){installation_id}/access_tokens using RestClient.
+
+Caching: The IAT expires in 1 hour. Implement Spring's @Cacheable (or a Caffeine cache bean) to cache this token for 55 minutes so we don't hit rate limits.
+
+Step 2: Configure the GitHub RestClient
+Create a centralized @Bean for the RestClient that automatically intercepts all outbound requests to api.github.com and injects:
+
+Authorization: Bearer {InstallationAccessToken}
+
+Accept: application/vnd.github+json
+
+X-GitHub-Api-Version: 2022-11-28
+
+Step 3: Implement Core Controllers & Services
+Implement the following REST Controllers and backing Services for the dashboard frontend to consume. Map standard JSON payloads to Java Records.
+
+1. RepositoryController
+
+GET /api/repos -> Fetch all repositories.
+
+POST /api/repos -> Create a new repository.
+
+PATCH /api/repos/{repo}/branch-protection -> Update main branch protection rules (require PRs, enforce status checks).
+
+2. WorkflowController (CI/CD)
+
+GET /api/repos/{repo}/actions/runs -> List recent workflow runs.
+
+POST /api/repos/{repo}/actions/workflows/{workflow_id}/dispatches -> Trigger a manual workflow (requires branch name and optional inputs).
+
+GET /api/repos/{repo}/actions/runs/{run_id}/logs -> Fetch the zip file of workflow logs, extract them, and stream the text back to the dashboard.
+
+3. SecretManagementService
+
+Crucial: GitHub requires secrets to be encrypted locally before transmission.
+
+Fetch the repository's public key from GET /repos/{owner}/{repo}/actions/secrets/public-key.
+
+Use lazy-sodium-java (Libsodium wrapper) to encrypt the plain text secret using crypto_box_seal with the fetched public key.
+
+PUT /repos/{owner}/{repo}/actions/secrets/{secret_name} -> Upload the Base64-encoded encrypted secret.
+
+4. PullRequestController
+
+GET /api/repos/{repo}/pulls -> List open PRs.
+
+PUT /api/repos/{repo}/pulls/{pull_number}/merge -> Execute a merge (allow standard, squash, or rebase).
+
+Step 4: Webhook Handler
+Implement a WebhookController listening on POST /api/webhooks/github to receive real-time updates (e.g., when a deployment finishes or an issue is opened).
+
+Security: Verify the X-Hub-Signature-256 header using the webhook secret to ensure the payload actually came from GitHub. Use an HMAC SHA-256 validation function.
+
+Routing: Parse the X-GitHub-Event header. Route workflow_run events to a service that updates the dashboard UI (e.g., via Server-Sent Events (SSE) or WebSockets) so I can see deployment states change in real time.
+
+Step 5: Dashboard Security
+Configure SecurityConfig to secure all /api/** endpoints (except the webhook receiver) so that only I can access this dashboard. Implement JWT-based authentication for the frontend-to-backend communication, completely separate from the GitHub JWTs.
+
+Code Generation Rules:
+
+Use standard Java 21 features (Records, Switch Expressions, Pattern Matching).
+
+Use constructor injection (via @RequiredArgsConstructor with Lombok).
+
+Create a @RestControllerAdvice to globally catch GitHub API errors (401, 403, 404) and translate them into clean standard JSON error responses for the frontend.
+
+Write the pom.xml dependencies required for this specific setup first.
+
+
+Context & Goal:
+We are continuing to build the Spring Boot 3 custom admin dashboard. We now need to integrate the Docker Engine API so I can monitor, manage, and stream logs from my Docker containers directly from my dashboard frontend.
+
+Tech Stack Additions:
+
+Docker SDK: com.github.docker-java:docker-java:3.7+ (and the docker-java-transport-httpclient5 for the transport layer).
+
+Real-time Streaming: Spring WebFlux (for Server-Sent Events / SSE) to stream live Docker logs.
+
+Please implement the following steps:
+
+Step 1: Configure the DockerClient Bean
+Create a DockerClientConfig class. I want a @Bean for the DockerClient that intelligently connects to Docker based on my environment properties (application.yml):
+
+Local/Co-located: Default to the Unix socket (unix:///var/run/docker.sock).
+
+Remote AWS EC2: Allow configuration for a TCP connection (e.g., tcp://<aws-ip>:2376) with TLS/SSL certificate paths (docker.cert.path) if I decide to manage a remote Docker daemon.
+Use the DefaultDockerClientConfig builder and the ApacheDockerHttpClient (HttpClient5 transport) to construct the DockerClientImpl.
+
+Step 2: Implement DockerContainerService and DockerContainerController
+I need full lifecycle control over my containers. Implement the following endpoints mapping to the DockerClient commands:
+
+GET /api/docker/containers -> List all containers (use listContainersCmd().withShowAll(true) so I can see stopped containers too). Map the Docker Container model to a clean Java Record (id, name, image, state, status, ports).
+
+POST /api/docker/containers/{containerId}/start -> Start a container (startContainerCmd).
+
+POST /api/docker/containers/{containerId}/stop -> Stop a container (stopContainerCmd).
+
+POST /api/docker/containers/{containerId}/restart -> Restart a container (restartContainerCmd).
+
+DELETE /api/docker/containers/{containerId} -> Remove a container (removeContainerCmd(), add a force=true query param).
+
+Step 3: Implement Live Log Streaming (SSE)
+I need to view live container logs on my dashboard without refreshing.
+
+Implement GET /api/docker/containers/{containerId}/logs using SseEmitter or WebFlux Flux<ServerSentEvent<String>>.
+
+Use the DockerClient's logContainerCmd(containerId). Ensure you include .withStdOut(true), .withStdErr(true), and .withFollowStream(true).
+
+Implement an Adapter using ResultCallback.Adapter<Frame> to capture the Docker log frames, extract the payload (ignoring the 8-byte header), and stream the plain text string back to the frontend via the SSE connection.
+
+Step 4: Implement System Resource Monitoring (Stats)
+I want to see live CPU and Memory usage for my containers, just like the docker stats command.
+
+Implement GET /api/docker/containers/{containerId}/stats as a streaming SSE endpoint.
+
+Use statsCmd(containerId) and hook up an Adapter to capture the Statistics object.
+
+In the service layer, calculate the CPU Percentage and Memory Usage (in MB) from the raw Statistics payload before emitting the JSON via SSE. (Note: You must calculate CPU % by comparing the delta of cpu_stats and precpu_stats over the system cpu_usage).
+
+Step 5: Implement DockerImageService
+GET /api/docker/images -> List locally available images (listImagesCmd()).
+
+POST /api/docker/images/pull -> Pull a new image from a registry (pullImageCmd()). This can take a while, so ensure this endpoint returns a 202 Accepted immediately and processes the pull asynchronously via @Async, or returns an SSE stream of the pull progress layers.
+
+DELETE /api/docker/images/prune -> Run a prune command to clean up unused/dangling images to free up my AWS EBS volumes.
+
+Code Generation Rules:
+
+Ensure all endpoints are protected by the existing Spring Security configuration.
+
+Properly close the DockerClient connection when the Spring context shuts down (implement @PreDestroy).
+
+Handle NotFoundException and NotModifiedException from the Docker API gracefully in our global @RestControllerAdvice.
