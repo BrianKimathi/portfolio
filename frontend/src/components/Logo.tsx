@@ -19,7 +19,7 @@ export default function Logo({
       <svg
         viewBox="0 0 64 64"
         fill="none"
-        className="h-8 w-8 sm:h-10 sm:w-10 shrink-0 text-gray-900 transition-transform duration-200 hover:scale-105"
+        className="h-8 w-8 sm:h-10 sm:w-10 shrink-0 text-gray-900 dark:text-white transition-transform duration-200 hover:scale-105"
         aria-hidden="true"
       >
         {/* Outer square */}
@@ -76,11 +76,11 @@ export default function Logo({
       </svg>
 
       <div
-        className={`text-base sm:text-lg font-bold tracking-tight text-gray-900 ${
+        className={`text-base sm:text-lg font-bold tracking-tight text-gray-900 dark:text-white ${
           iconOnlyOnMobile ? "hidden sm:block" : "block"
         }`}
       >
-        Brian <span className="text-gray-500 font-medium">Kimathi</span>
+        Brian <span className="text-gray-500 dark:text-gray-400 font-medium">Kimathi</span>
       </div>
     </div>
   );

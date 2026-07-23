@@ -7,13 +7,13 @@ export default function ProjectsPage() {
   const { ref, isInView } = useInView<HTMLElement>({ threshold: 0.05 });
 
   return (
-    <div className="min-h-screen bg-white pt-24">
+    <div className="min-h-screen bg-white dark:bg-gray-950 pt-24 transition-colors duration-200">
       {/* Back link */}
       <div className="px-6 py-6">
         <div className="max-w-5xl mx-auto">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
           >
             <svg
               className="w-3.5 h-3.5"
@@ -36,14 +36,14 @@ export default function ProjectsPage() {
       <section ref={ref} className="px-6 pb-24">
         <div className="max-w-5xl mx-auto">
           <h1
-            className={`text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 fade-in ${
+            className={`text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white fade-in ${
               isInView ? "visible" : ""
             }`}
           >
             Projects
           </h1>
           <p
-            className={`mt-2 text-gray-500 fade-in stagger-2 ${
+            className={`mt-2 text-gray-500 dark:text-gray-400 fade-in stagger-2 ${
               isInView ? "visible" : ""
             }`}
           >

@@ -1,96 +1,76 @@
 import { useInView } from "../hooks/useInView";
 
-const skillGroups = [
+const skillCategories = [
   {
-    category: "Frontend",
-    skills: ["React", "TypeScript", "Tailwind CSS", "Next.js", "HTML / CSS"],
+    title: "Languages & Core",
+    skills: ["TypeScript", "JavaScript", "Python", "Java", "HTML/CSS", "SQL"],
   },
   {
-    category: "Backend",
-    skills: ["Node.js", "Express", "Python", "REST APIs", "PostgreSQL"],
+    title: "Frameworks & Libraries",
+    skills: [
+      "React",
+      "Next.js",
+      "Node.js",
+      "Spring Boot",
+      "Tailwind CSS",
+      "Express",
+    ],
   },
   {
-    category: "Tools & DevOps",
-    skills: ["Git", "GitHub Actions", "Docker", "Vite", "Figma"],
-  },
-  {
-    category: "Currently Learning",
-    skills: ["Rust", "Go", "Kubernetes", "AWS"],
+    title: "Tools & Infrastructure",
+    skills: ["Git", "Docker", "AWS (EC2, S3)", "Vite", "PostgreSQL", "Linux"],
   },
 ];
 
-function SkillGroup({
-  group,
-  index,
-}: {
-  group: (typeof skillGroups)[number];
-  index: number;
-}) {
-  const { ref, isInView } = useInView<HTMLDivElement>({ threshold: 0.12 });
-
-  return (
-    <div
-      ref={ref}
-      className={`border border-gray-200 rounded-xl p-5 sm:p-6 fade-in ${
-        isInView ? "visible" : ""
-      } stagger-${Math.min(index + 1, 4)}`}
-    >
-      <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">
-        {group.category}
-      </h3>
-      <div className="flex flex-wrap gap-2">
-        {group.skills.map((skill) => (
-          <span
-            key={skill}
-            className="inline-block px-3 py-1.5 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 hover:border-gray-300 transition-all duration-200"
-          >
-            {skill}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function Skills() {
-  const { ref, isInView } = useInView<HTMLElement>({ threshold: 0.05 });
+  const { ref, isInView } = useInView<HTMLElement>({ threshold: 0.1 });
 
   return (
     <section
       id="skills"
       ref={ref}
-      className="px-6 py-12 sm:py-16 border-t border-gray-100"
+      className="px-6 py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800/80"
     >
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="text-center max-w-lg mx-auto">
-          <span
-            className={`inline-block text-xs font-medium text-gray-400 uppercase tracking-widest fade-in ${
-              isInView ? "visible" : ""
-            }`}
-          >
-            Toolkit
-          </span>
-          <h2
-            className={`mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 fade-in stagger-2 ${
-              isInView ? "visible" : ""
-            }`}
-          >
-            Skills &amp; technologies
-          </h2>
-          <p
-            className={`mt-3 text-gray-500 fade-in stagger-3 ${
-              isInView ? "visible" : ""
-            }`}
-          >
-            Technologies I reach for every day and a few I&apos;m exploring.
-          </p>
-        </div>
+        <h2
+          className={`text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white fade-in ${
+            isInView ? "visible" : ""
+          }`}
+        >
+          Skills & Technologies
+        </h2>
+        <p
+          className={`mt-2 text-gray-500 dark:text-gray-400 fade-in stagger-1 ${
+            isInView ? "visible" : ""
+          }`}
+        >
+          Tools and technologies I use to bring ideas to life.
+        </p>
 
-        {/* Grid */}
-        <div className="mt-12 grid gap-5 sm:grid-cols-2">
-          {skillGroups.map((group, index) => (
-            <SkillGroup key={group.category} group={group} index={index} />
+        {/* Grid of categories */}
+        <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {skillCategories.map((cat, catIdx) => (
+            <div
+              key={cat.title}
+              className={`fade-in stagger-${catIdx + 1} ${
+                isInView ? "visible" : ""
+              }`}
+            >
+              <h3 className="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4">
+                {cat.title}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {cat.skills.map((skill) => (
+                  <span
+                    key={skill}
+                    className="inline-block px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-700 transition-all duration-200"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </div>
