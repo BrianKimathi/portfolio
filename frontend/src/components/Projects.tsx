@@ -12,7 +12,7 @@ export default function Projects() {
     <section
       id="projects"
       ref={ref}
-      className="px-6 py-24 border-t border-gray-100"
+      className="px-6 py-12 sm:py-16 border-t border-gray-100"
     >
       <div className="max-w-5xl mx-auto">
         <h2
