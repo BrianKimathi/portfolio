@@ -9,11 +9,13 @@ export interface Experience {
 export interface Project {
   slug: string;
   title: string;
-  description: string;
-  longDescription: string;
-  tags: string[];
-  links: { github: string; live: string };
-  features: string[];
+  summary: string;
+  description: string[];
+  tech: string[];
+  link?: string;
+  github?: string;
+  image?: string;
+  features?: string[];
 }
 
 export interface ApiResponse<T> {
